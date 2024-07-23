@@ -1,12 +1,17 @@
 from django.template import loader
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404
-from .models import Question
+from .models import Question, Choice
 from django.db.models import F
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
+import matplotlib.pyplot as plt
+import io
+import urllib, base64
+
+
 
 class IndexView(generic.ListView):
     template_name = "polls/index.html"
@@ -30,10 +35,38 @@ class DetailView(generic.DetailView):
         return Question.objects.filter(pub_date__lte=timezone.now())
 
 
-class ResultsView(generic.DetailView):
+'''class ResultsView(generic.DetailView):
     model = Question
-    template_name = "polls/results.html"
 
+    template_name = "polls/results.html"
+'''
+
+def results(request, pk):
+    #get only the question choices
+    question = get_object_or_404(Question, pk=pk)
+    choices = Choice.objects.filter(question_id=pk)
+    # Extract choice_text and votes separately into lists
+    choice_texts = [choice.choice_text for choice in choices]
+    votes = [choice.votes for choice in choices]
+
+    plt.bar(choice_texts, votes,  color = ['red', 'green'], width=0.4)
+
+    # naming the x-axis
+    plt.xlabel('Choices')
+    # naming the y-axis
+    plt.ylabel('Votes')
+    # plot title
+    plt.title('Graph for votes')
+    fig = plt.gcf()
+
+    #convert graph into dtring buffer and then we convert 64 bit code into image
+    buf = io.BytesIO()
+    fig.savefig(buf, format='png')
+    buf.seek(0)
+    string = base64.b64encode(buf.read())
+    uri = urllib.parse.quote(string)
+
+    return render(request, "polls/results.html", {"question": question, 'data':uri})
 
 ''' Version without generic views
 def index(request):

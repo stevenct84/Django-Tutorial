@@ -11,5 +11,8 @@
 - [x]   Part 5: Testing 
 - [x]   Part 6: Static files 
 - [x]   Part 7: Customizing the admin site 
-- [ ]   Part 8: Adding third-party packages - In Progress
-- [ ]   How to write reusable apps - In Progress
+- [x]   Part 8: Adding third-party packages
+- [ ]   How to write reusable apps - It was made in another brach( it is called reusable-apps)
+
+For part 8, matplotlib was added.
+It creates a graph for see the results of the polls. 
